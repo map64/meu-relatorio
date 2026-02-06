@@ -23,21 +23,29 @@ def buscar_dados():
     return corpo
 
 def enviar_email(conteudo):
-    # O GitHub vai pegar os dados do "Cofre" (Secrets) que você configurou
     usuario = os.getenv('EMAIL_USER')
     senha = os.getenv('EMAIL_PASS')
+    
+    # DIAGNÓSTICO: Verificando se as senhas estão chegando
+    if not usuario or not senha:
+        print("ERRO: As credenciais não foram encontradas no cofre (Secrets)!")
+        return
 
     msg = EmailMessage()
     msg.set_content(conteudo)
     msg['Subject'] = f"Relatório Commodities {datetime.now().strftime('%d/%m')}"
     msg['From'] = usuario
-    msg['To'] = usuario # Envia para você mesmo
+    msg['To'] = usuario
 
-    with smtplib.SMTP_SSL('smtp.gmail.com', 465) as smtp:
-        smtp.login(usuario, senha)
-        smtp.send_message(msg)
+    try:
+        with smtplib.SMTP_SSL('smtp.gmail.com', 465) as smtp:
+            smtp.login(usuario, senha)
+            smtp.send_message(msg)
+        print("SUCESSO: O Gmail aceitou o e-mail e enviou!")
+    except Exception as e:
+        print(f"ERRO AO ENVIAR: {e}")
 
 if __name__ == "__main__":
     relatorio = buscar_dados()
+    print("Dados coletados. Tentando enviar e-mail...")
     enviar_email(relatorio)
-    print("E-mail enviado com sucesso!")
