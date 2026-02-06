@@ -13,7 +13,8 @@ jobs:
         with:
           python-version: '3.10'
       - run: pip install yfinance
-      - run: python main.py
+      - name: Executando o Script de Commodities
+        run: python main.py
         env:
           EMAIL_USER: ${{ secrets.EMAIL_USER }}
           EMAIL_PASS: ${{ secrets.EMAIL_PASS }}
